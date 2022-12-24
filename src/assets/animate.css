@@ -1,0 +1,131 @@
+::selection {
+  background-color: transparent;
+}
+input::selection {
+  background-color: darkblue;
+}
+.laps.fadein {
+  animation: fadeInLaps 0.5s cubic-bezier(0.8, 0, 1, 1);
+}
+.laps.fadeout {
+  animation: fadeOutLaps 1s ease-in-out forwards;
+}
+.stopWatchRotate {
+  animation: rotateStopwatch 1s infinite linear;
+}
+.animateShow {
+  opacity: 1;
+  left: -50%;
+  animation: AnimateShow 0.1s linear forwards;
+}
+
+.animateHidden {
+  opacity: 0;
+  left: 0%;
+  animation: AnimateHidden 0.3s linear forwards;
+}
+#ringtoneScroll::-webkit-scrollbar,
+#savedAlarms::-webkit-scrollbar {
+  width: 8px;
+  background: rgba(2, 9, 30, 0.1);
+  border-radius: 20px;
+}
+
+#ringtoneScroll::-webkit-scrollbar-thumb,
+#savedAlarms::-webkit-scrollbar-thumb {
+  background: rgba(204, 204, 204, 0.5);
+  border-radius: 20px;
+}
+
+.alarm-active {
+  animation: bounce 1s;
+}
+.alarm-inactive {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1);
+}
+.shadow-day {
+  box-shadow: 0px 0px 10px #1d4ed8;
+  /* animation: shadowDayRotate 0.9s; */
+}
+.alarmRotate {
+  animation: rotateAlarm 1s infinite;
+}
+@keyframes fadeInLaps {
+  from {
+    opacity: 0.3;
+    transform: translateY(10px);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0px);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+@keyframes fadeOutLaps {
+  from {
+    opacity: 1;
+    transform: translateX(0px);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes rotateStopwatch {
+  to {
+    transform: rotate(360deg);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.6, 1);
+  }
+}
+@keyframes AnimateShow {
+  to {
+    left: 0%;
+  }
+}
+
+@keyframes AnimateHidden {
+  to {
+    left: -100%;
+  }
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(0.9);
+    opacity: 0.3;
+  }
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+@keyframes shadowDayRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotateAlarm {
+  0% {
+    transform: rotate(-45deg);
+  }
+  50% {
+    transform: rotate(45deg);
+  }
+  75% {
+    transform: rotate(45deg);
+  }
+  100% {
+    transform: rotate(-45deg);
+  }
+}
