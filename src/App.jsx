@@ -1,6 +1,7 @@
 import AlarmClockCon from "./components/AlarmClockCon";
 import Nav from "./components/Nav";
 import StopWatchCon from "./components/StopWatchCon";
+import TimerCon from "./components/TimerCon";
 
 function App() {
   return (
@@ -8,7 +9,8 @@ function App() {
       <div className="container mx-auto ">
         <Nav />
         {/* <StopWatchCon /> */}
-        <AlarmClockCon />
+        {/* <AlarmClockCon /> */}
+        <TimerCon />
       </div>
     </div>
   );

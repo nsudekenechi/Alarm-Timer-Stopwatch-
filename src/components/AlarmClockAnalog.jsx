@@ -3,6 +3,7 @@ export default function ({
   setShowAlarm,
   setShowAlarmType,
   handleDeleteAllAlarms,
+  alarmType,
 }) {
   let [date, setDate] = useState(new Date());
   let [clockHand, setClockHand] = useState({
@@ -22,8 +23,10 @@ export default function ({
     requestAnimationFrame(updateTime);
   };
   requestAnimationFrame(updateTime);
-  const closeAlarmClock = () => {
+  const showAlarmClock = () => {
     setShowAlarm((prevState) => !prevState);
+    // Specifying that user wants to add
+    alarmType((prev) => ({ ...prev, alarm: "", type: "Add" }));
   };
 
   return (
@@ -51,7 +54,7 @@ export default function ({
       <div className="mt-10   flex justify-center font-[Finlandica]">
         <button
           className="mr-5 flex items-center justify-between text-gray-50 uppercase bg-black  py-3 px-10 rounded-full "
-          onClick={closeAlarmClock}
+          onClick={showAlarmClock}
         >
           Add
         </button>

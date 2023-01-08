@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
 
-export default function AlarmClockSetLabel(ShowAlarm) {
+export default function AlarmClockSetLabel({ ShowAlarm, editLabel }) {
   const [showLabel, setShowLabel] = useState(false);
   const [Label, setLabel] = useState("");
   const input = useRef();
@@ -18,8 +18,12 @@ export default function AlarmClockSetLabel(ShowAlarm) {
     handleShowLabel();
   };
   useEffect(() => {
-    setLabel("");
+    setLabel(editLabel == undefined ? "" : editLabel);
+    editLabel == undefined
+      ? (input.current.value = "")
+      : (input.current.value = editLabel);
   }, [ShowAlarm]);
+  console.log();
   return (
     <div className="flex justify-between ">
       <h1>Label</h1>

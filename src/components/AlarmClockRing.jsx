@@ -3,27 +3,42 @@ import { BiAlarmOff, BiAlarmSnooze, BiAlarm } from "react-icons/bi";
 export default function AlarmClockRing() {
   let repeatDays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   let today = repeatDays[new Date().getDay()];
+  let [time, setTime] = useState(new Date());
   let getTodayAlarm = [];
   let [audio, setAudio] = useState({
     src: "",
   });
-
-  let [UpdateTime, setUpdateTime] = useState(false);
   let [showAlarm, setShowAlarm] = useState(false);
-  let id = setInterval(() => {
+  let [alarms, setAlarms] = useState([]);
+  let notification;
+
+  useEffect(() => {
+    let id = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
     if (localStorage.getItem("savedAlarms")) {
       readyAlarm();
     }
-  }, 100);
+  }, [time]);
 
   const readyAlarm = () => {
     // Getting Items that are supposed to ring today
     JSON.parse(localStorage.getItem("savedAlarms")).map((item) => {
-      item.days.forEach((item2) => {
-        if (item2 == today) {
+      if (item.extraDay == "") {
+        item.days.forEach((item2) => {
+          if (item2 == today) {
+            getTodayAlarm.push(item);
+          }
+        });
+      } else {
+        if (item.extraDay == today) {
           getTodayAlarm.push(item);
         }
-      });
+      }
     });
 
     // Checking if alarm time is == current time
@@ -40,40 +55,77 @@ export default function AlarmClockRing() {
         : date.getHours();
     let minutes =
       date.getMinutes() < 10 ? `0${date.getMinutes()}` : date.getMinutes();
-    let AMPM = date.getHours() > 12 ? "PM" : "AM";
-    let time = `${hour}:${minutes}${AMPM}`;
+    let AMPM = date.getHours() >= 12 ? "PM" : "AM";
+    let currentTime = `${hour}:${minutes}${AMPM}`;
 
-    getTodayAlarm.forEach((day) => {
+    getTodayAlarm.forEach((day, index) => {
+      setAlarms((prev) => {
+        let uniqueItem = [];
+        // Making sure items do not duplicate
+        return [...prev, { id: day.id, ringing: false }].filter((item) => {
+          if (!uniqueItem.includes(item.id)) {
+            uniqueItem.push(item.id);
+            return true;
+          }
+        });
+      });
       let alarmTime = `${day.time}${day.timeOfDay}`;
 
-      if (alarmTime == time && day.active) {
-        ringAlarm(day.ringtone);
+      if (alarmTime == currentTime && day.active) {
+        alarms.forEach((alarm) => {
+          if (alarm.id == day.id && alarm.ringing == false) {
+            // Returning ringing to true so that we dont have to replay alarm when dismiss button is clicked
+            ringAlarm(day);
+            setAlarms((prev) => {
+              return [...prev].filter((item) => {
+                if (item.id == alarm.id) {
+                  item.ringing = true;
+                }
+                return item;
+              });
+            });
+          }
+        });
       }
     });
   };
 
-  const ringAlarm = (ringtone) => {
+  const ringAlarm = (day) => {
     setShowAlarm(true);
     setAudio((prevState) => ({
       ...prevState,
-      src: ringtone == "" ? "1.mp3" : ringtone,
+      src: day.ringtone == "" ? "1.mp3" : day.ringtone,
     }));
+
+    // Displaying Notification for Alarm
+    Notification.requestPermission((perm) => {
+      if (perm == "granted") {
+        new Notification("yooo", {
+          body: "Noooo",
+        });
+      }
+    });
+
+    // Stopping Alarm after 30sec
+    setTimeout(() => {
+      dismissAlarm();
+    }, 30000);
   };
 
   const dismissAlarm = () => {
-    clearInterval(id);
     // Hiding alarm banner
     setShowAlarm(false);
     setAudio((prevState) => ({
       ...prevState,
       src: "",
     }));
+    // notification.close();
   };
 
   return (
     <>
       <div
-        className={`fixed w-[100%] h-[100%] grid top-0 left-0 bg-black place-items-center ${
+        className={`z-50 fixed w-[100%] h-[100%] grid top-0 left-0 bg-black place-items-center ${
           showAlarm ? "" : "hidden"
         }`}
       >

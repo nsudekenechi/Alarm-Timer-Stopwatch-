@@ -8,7 +8,7 @@ const Nav = () => {
       <div className="grid grid-cols-12">
         <ul className="flex justify-around col-span-10">
           <li>
-            <a href="" className="text-gray-400">
+            <a href="" className="nav-inactive">
               Alarm
             </a>
           </li>
@@ -18,7 +18,7 @@ const Nav = () => {
             </a>
           </li>
           <li>
-            <a href="" className="text-gray-400">
+            <a href="" className="nav-inactive">
               Timer
             </a>
           </li>

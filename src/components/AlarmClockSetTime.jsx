@@ -3,7 +3,7 @@ import AlarmClockSetRingtone from "./AlarmClockSetRingtone";
 import { useEffect, useState } from "react";
 import { GiCancel } from "react-icons/gi";
 
-export default function AlarmClockSetTime({ ShowAlarm }) {
+export default function AlarmClockSetTime({ ShowAlarm, editTime }) {
   let date = new Date();
   // Hour and Minute
   let alarmHour = [];
@@ -26,12 +26,12 @@ export default function AlarmClockSetTime({ ShowAlarm }) {
   let [AM_PM_BOOL, set_AM_PM_Bool] = useState(true);
   let [AM_PM, setAM_PM] = useState({
     //Applying class bold on AM when hours is <= 12
-    active:
+    AM:
       date.getHours() <= 11
         ? "text-2xl  font-bold  "
         : "text-md  font-bold text-gray-300 ",
 
-    inactive:
+    PM:
       date.getHours() <= 11
         ? "text-md  font-bold text-gray-300"
         : "text-2xl  font-bold  ",
@@ -40,10 +40,10 @@ export default function AlarmClockSetTime({ ShowAlarm }) {
     set_AM_PM_Bool((prevState) => !prevState);
     setAM_PM((prevState) => ({
       ...prevState,
-      active: AM_PM_BOOL
+      AM: AM_PM_BOOL
         ? "text-2xl  font-bold alarm-active"
         : "text-md  font-bold text-gray-300 alarm-inactive",
-      inactive: AM_PM_BOOL
+      PM: AM_PM_BOOL
         ? "text-md  font-bold text-gray-300 alarm-inactive"
         : "text-2xl  font-bold alarm-active ",
     }));
@@ -88,7 +88,7 @@ export default function AlarmClockSetTime({ ShowAlarm }) {
   const displayHours = (time) => {
     let index = alarmHour.indexOf(time) - 2; //Subtracting 2 from original index so it gets 2 items before index
     let hours;
-    // Checking if index does not return a negative number after dividing by 2
+    // Checking if index does not return a negative number after Subtracting by 2
 
     if (index >= 0) {
       hours =
@@ -127,22 +127,43 @@ export default function AlarmClockSetTime({ ShowAlarm }) {
     // Reseting Values
   };
   useEffect(() => {
+    // When Editing
+    let editedTime = editTime.split(":");
+
     // Setting current hour and minute based on when user clicks button
     let date = new Date();
     let hours =
-      date.getHours() > 12
-        ? date.getHours() - 12
-        : date.getHours() == 0
-        ? 12
-        : date.getHours();
-
+      editedTime[0] == "undefined"
+        ? date.getHours() > 12
+          ? date.getHours() - 12
+          : date.getHours() == 0
+          ? 12
+          : date.getHours()
+        : parseInt(editedTime[0]);
+    let minutes =
+      editedTime[1] == "undefined"
+        ? date.getMinutes()
+        : parseInt(editedTime[1]);
     displayHours(hours);
-    displayMinutes(date.getMinutes());
+    displayMinutes(minutes);
     setClockHand((prevState) => ({
       ...prevState,
-      minute: date.getMinutes(),
+      minute: minutes,
       hour: hours,
     }));
+    if (!editedTime.includes("undefined")) {
+      setAM_PM((prev) => ({
+        ...prev,
+        AM:
+          editedTime[2] == "AM"
+            ? "text-2xl  font-bold  "
+            : "text-md  font-bold text-gray-300 ",
+        PM:
+          editedTime[2] == "PM"
+            ? "text-2xl  font-bold  "
+            : "text-md  font-bold text-gray-300 ",
+      }));
+    }
   }, [ShowAlarm.showAlarm]);
   return (
     <>
@@ -172,8 +193,8 @@ export default function AlarmClockSetTime({ ShowAlarm }) {
 
         <div className="" onClick={changeAmToPM}>
           <div className="h-[100%] grid content-around">
-            <p className={`${AM_PM.active} timeofday`}>AM</p>
-            <p className={`${AM_PM.inactive} timeofday`}>PM</p>
+            <p className={`${AM_PM.AM} timeofday`}>AM</p>
+            <p className={`${AM_PM.PM} timeofday`}>PM</p>
           </div>
         </div>
       </div>

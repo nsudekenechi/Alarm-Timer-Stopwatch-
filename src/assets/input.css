@@ -9,4 +9,7 @@
     @apply bg-slate-200;
     @apply rounded-full;
   }
+  .nav-inactive {
+    @apply text-gray-400;
+  }
 }

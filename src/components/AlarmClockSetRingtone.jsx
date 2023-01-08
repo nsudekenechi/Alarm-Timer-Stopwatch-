@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IoIosArrowForward } from "react-icons/io";
-export default function AlarmClockSetRingtone(ShowAlarm) {
+export default function AlarmClockSetRingtone({ ShowAlarm, editRingtone }) {
   const [showLabel, setShowLabel] = useState(false);
   const ringtones = [
     "Sunshine",
@@ -43,11 +43,22 @@ export default function AlarmClockSetRingtone(ShowAlarm) {
       }
     };
   });
-  // Removing checkbox on radio
   useEffect(() => {
     radioButtons.forEach((button) => {
-      button.checked = false;
+      if (editRingtone != undefined) {
+        if (button.value == ringtones[parseInt(editRingtone) - 1])
+          // Adding checkbox to radio incase radio matches edit ringtone
+          button.checked = true;
+      } else {
+        // Removing checkbox on radio
+        button.checked = false;
+      }
     });
+    // Editing Ringtone
+    // Parseinting editringtone cos it returns a number eg 4.mp3, but we want a ringtone name from ringtones array
+    setSelectedRingtone(
+      editRingtone != undefined ? ringtones[parseInt(editRingtone) - 1] : ""
+    );
   }, [ShowAlarm]);
   return (
     <div className="flex justify-between my-10">
