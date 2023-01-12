@@ -4,6 +4,10 @@
 input::selection {
   background-color: darkblue;
 }
+#timerOption input::selection {
+  background-color: blue;
+  color: white;
+}
 .laps.fadein {
   animation: fadeInLaps 0.5s cubic-bezier(0.8, 0, 1, 1);
 }
@@ -127,5 +131,16 @@ input::selection {
   }
   100% {
     transform: rotate(-45deg);
+  }
+}
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: none;
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
   }
 }

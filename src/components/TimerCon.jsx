@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import TimerSet from "./TimerSet";
-
+import { BiTimer } from "react-icons/bi";
+import { GiNightSleep, GiWhirlpoolShuriken } from "react-icons/gi";
+import { CgGym, CgWorkAlt, CgTimer } from "react-icons/cg";
 export default function TimerCon() {
   const [timer, setTimer] = useState({
     hours: [],
@@ -23,7 +25,6 @@ export default function TimerCon() {
     minutes: index.minutes,
     seconds: index.seconds,
   };
-
   let [showTimer, setShowTimer] = useState({
     clock: false,
     button: false,
@@ -35,8 +36,38 @@ export default function TimerCon() {
     rotateClock: 0,
     wasPaused: false,
     timerInterval: "",
+    timeInSeconds: 0,
   });
   let [endTimer, setEndTimer] = useState(false);
+  const [showAddTimer, setshowAddTimer] = useState({
+    show: false,
+    name: "Timer",
+    sticker: "Timer",
+  });
+  let [savedTimers, setSavedTimers] = useState([]);
+  // Sticker for Add Timer
+  let items = [],
+    stickerNames = ["Timer", "Sleep", "Gym", "Work", "Mindfulness", "Meeting"];
+  // Setting every sticker to false since they are not clicked, also setting Sticker's Name
+  stickerNames.forEach((icon, index) => {
+    items.push({
+      selected: index == 0 ? true : false,
+      id: index,
+      stickerName: stickerNames[index],
+    });
+  });
+  const [stickers, setSticker] = useState({
+    sticker: [
+      <BiTimer />,
+      <GiNightSleep />,
+      <CgGym />,
+      <CgWorkAlt />,
+      <CgTimer />,
+      <GiWhirlpoolShuriken />,
+    ],
+    selectedSticker: items,
+    stickerName: "Timer",
+  });
   // Pushing time hours = 0 to 23,minutes = 0 to 59,seconds = 0 to 59
   for (let i = 0; i < 60; i++) {
     if (i < 24) {
@@ -45,7 +76,7 @@ export default function TimerCon() {
     collectedTime.minutes.push(i);
     collectedTime.seconds.push(i);
   }
-
+  // Timer Handlers
   const decrementTimer = (timerType) => {
     let timer;
 
@@ -165,7 +196,7 @@ export default function TimerCon() {
     // Here array[1] means select the middle number eg: [5,6,7] here 6 is the middle number and 6 has index
     let stopTimer =
       timerValues.seconds + timerValues.minutes * 60 + timerValues.hours * 3600;
-    if (stopTimer >= 5) {
+    if (timerValues.timeInSeconds >= 5) {
       let checkSeconds = timerValues.seconds;
       let checkMinutes = timerValues.minutes;
       let checkHours = timerValues.hours;
@@ -274,10 +305,13 @@ export default function TimerCon() {
       minutes: timer.minutes[1],
       seconds: timer.seconds[1],
       rotateClock: timer.seconds[1],
+      timeInSeconds:
+        timer.seconds[1] + timer.minutes[1] * 60 + timer.hours[1] * 3600,
     }));
   }, [timer]);
+
   return (
-    <div className="container mx-auto  pt-10">
+    <div className="container mx-auto  pt-10 relative">
       <div className="grid grid-cols-12">
         <TimerSet
           timer={{
@@ -288,8 +322,14 @@ export default function TimerCon() {
             pauseTimer,
             resetTimer,
             stopTimer,
+            setshowAddTimer,
+            showAddTimer,
             showTimer,
             timerValues,
+          }}
+          sticker={{
+            stickers,
+            setSticker,
           }}
         />
 
