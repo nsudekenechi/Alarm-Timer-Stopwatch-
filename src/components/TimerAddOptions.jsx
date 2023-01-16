@@ -1,9 +1,14 @@
-import { useEffect } from "react";
 import { HiOutlineChevronRight } from "react-icons/hi";
 
 export default function TimerAddOptions({ option, setGetOption }) {
   const enterOption = () => {
     setGetOption(option.name);
+    if (option.name == "Sticker") {
+      option.sticker.setSticker((prev) => ({
+        ...prev,
+        stickerName: option.showTimerAdd.sticker,
+      }));
+    }
   };
   return (
     <div

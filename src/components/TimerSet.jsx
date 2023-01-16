@@ -3,14 +3,7 @@ import { IoMdAdd, IoMdPlay, IoMdRepeat, IoMdPause } from "react-icons/io";
 import { BiStop } from "react-icons/bi";
 import TimerAdd from "./TimerAdd";
 import TimerSaved from "./TimerSaved";
-export default function TimerSet({ timer, sticker }) {
-  const showAdd = () => {
-    timer.setshowAddTimer((prev) => ({ ...prev, show: !prev.show }));
-  };
-
-  const hideAdd = () => {
-    timer.setshowAddTimer((prev) => ({ ...prev, show: !prev.show }));
-  };
+export default function TimerSet({ timer, sticker, savedTimer }) {
   return (
     <>
       <div className=" col-span-10">
@@ -82,7 +75,7 @@ export default function TimerSet({ timer, sticker }) {
             className={`h-[70px] w-[70px] bg-gray-300 rounded-full  flex justify-center items-center cursor-pointer ${
               !timer.showTimer.clock ? "" : "hidden"
             } `}
-            onClick={showAdd}
+            onClick={timer.showAdd}
           >
             <IoMdAdd className="text-2xl" />
           </div>
@@ -120,13 +113,35 @@ export default function TimerSet({ timer, sticker }) {
         <TimerAdd
           showTimerAdd={timer.showAddTimer}
           setShowTimer={timer.setshowAddTimer}
-          hideAdd={hideAdd}
+          hideAdd={timer.hideAdd}
           sticker={sticker}
+          savedTimer={savedTimer}
         />
       </div>
 
-      <div className="col-span-2 grid grid-cols-12 h-fit gap-y-10">
-        <TimerSaved />
+      <div
+        className={`col-span-2 grid grid-cols-12 h-fit gap-y-10 ${
+          !timer.showAddTimer.show ? "" : "hidden"
+        }  ${!timer.showTimer.clock ? "" : "hidden"} `}
+      >
+        {savedTimer.savedTimers.map((item) => (
+          <TimerSaved
+            key={item.id}
+            timer={{
+              id: item.id,
+              name: item.timerName,
+              sticker:
+                sticker.stickers.stickerIcon[
+                  sticker.stickers.stickerNames.indexOf(item.stickerName)
+                ],
+              time: item.timer,
+              handleSetTimer: savedTimer.handleSetTimer,
+              handleDeleteTimer: savedTimer.handleDeleteTimer,
+              handleSetEditTimer: savedTimer.handleSetEditTimer,
+              clicked: item.clicked,
+            }}
+          />
+        ))}
       </div>
     </>
   );

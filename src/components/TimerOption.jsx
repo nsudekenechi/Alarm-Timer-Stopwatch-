@@ -93,7 +93,7 @@ export default function TimerOption({ option }) {
 
         {option.getOption == "Sticker" && (
           <div className="grid grid-cols-12 gap-5 py-5">
-            {option.sticker.stickers.sticker.map((item, index) => (
+            {option.sticker.stickers.stickerIcon.map((item, index) => (
               <div
                 key={index}
                 className={`${

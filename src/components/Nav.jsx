@@ -1,4 +1,5 @@
 import { GoSettings } from "react-icons/go";
+import { NavLink } from "react-router-dom";
 const Nav = () => {
   return (
     <nav>
@@ -6,21 +7,36 @@ const Nav = () => {
         <GoSettings className="text-3xl" />
       </ul>
       <div className="grid grid-cols-12">
-        <ul className="flex justify-around col-span-10">
+        <ul className="flex justify-around col-span-10 font-[Sofia Sans]">
           <li>
-            <a href="" className="nav-inactive">
-              Alarm
-            </a>
-          </li>
-          <li>
-            <a href="" className="nav-active">
+            <NavLink
+              to="/stopwatch"
+              className={({ isActive }) =>
+                isActive ? "nav-active " : "nav-inactive"
+              }
+            >
               Stop Watch
-            </a>
+            </NavLink>
           </li>
           <li>
-            <a href="" className="nav-inactive">
+            <NavLink
+              to="/"
+              className={({ isActive }) =>
+                isActive ? "nav-active" : "nav-inactive"
+              }
+            >
+              Alarm
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to="/timer"
+              className={({ isActive }) =>
+                isActive ? "nav-active" : "nav-inactive"
+              }
+            >
               Timer
-            </a>
+            </NavLink>
           </li>
         </ul>
       </div>

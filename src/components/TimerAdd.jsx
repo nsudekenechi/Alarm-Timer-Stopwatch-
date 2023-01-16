@@ -7,6 +7,7 @@ export default function TimerAdd({
   setShowTimer,
   hideAdd,
   sticker,
+  savedTimer,
 }) {
   const [getOption, setGetOption] = useState("");
 
@@ -22,7 +23,12 @@ export default function TimerAdd({
           setGetOption={setGetOption}
         />
         <TimerAddOptions
-          option={{ name: "Sticker", value: showTimerAdd.sticker }}
+          option={{
+            name: "Sticker",
+            value: showTimerAdd.sticker,
+            sticker,
+            showTimerAdd,
+          }}
           setGetOption={setGetOption}
         />
         <TimerOption
@@ -47,7 +53,16 @@ export default function TimerAdd({
         >
           <BsArrowLeft />
         </button>
-        <button className="uppercase font-bold text-blue-500">Save</button>
+        <button
+          className="uppercase font-bold text-blue-500"
+          onClick={
+            !showTimerAdd.isEdit
+              ? savedTimer.handleSaveTimer
+              : savedTimer.handleEditTimer
+          }
+        >
+          {!showTimerAdd.isEdit ? "Save" : "Edit"}
+        </button>
       </div>
     </>
   );

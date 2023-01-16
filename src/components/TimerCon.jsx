@@ -40,11 +40,17 @@ export default function TimerCon() {
   });
   let [endTimer, setEndTimer] = useState(false);
   const [showAddTimer, setshowAddTimer] = useState({
+    isEdit: false,
+    timerID: "",
     show: false,
     name: "Timer",
     sticker: "Timer",
   });
-  let [savedTimers, setSavedTimers] = useState([]);
+  let [savedTimers, setSavedTimers] = useState(
+    localStorage.getItem("savedTimers")
+      ? JSON.parse(localStorage.getItem("savedTimers"))
+      : []
+  );
   // Sticker for Add Timer
   let items = [],
     stickerNames = ["Timer", "Sleep", "Gym", "Work", "Mindfulness", "Meeting"];
@@ -57,7 +63,7 @@ export default function TimerCon() {
     });
   });
   const [stickers, setSticker] = useState({
-    sticker: [
+    stickerIcon: [
       <BiTimer />,
       <GiNightSleep />,
       <CgGym />,
@@ -67,6 +73,7 @@ export default function TimerCon() {
     ],
     selectedSticker: items,
     stickerName: "Timer",
+    stickerNames: ["Timer", "Sleep", "Gym", "Work", "Mindfulness", "Meeting"],
   });
   // Pushing time hours = 0 to 23,minutes = 0 to 59,seconds = 0 to 59
   for (let i = 0; i < 60; i++) {
@@ -114,7 +121,6 @@ export default function TimerCon() {
       timer = setIncrementingTimer(extraIndex.seconds, collectedTime.seconds);
       extraIndex.seconds = timer.index;
     }
-
     setIndex((prev) => ({
       ...prev,
       hours: extraIndex.hours,
@@ -196,11 +202,12 @@ export default function TimerCon() {
     // Here array[1] means select the middle number eg: [5,6,7] here 6 is the middle number and 6 has index
     let stopTimer =
       timerValues.seconds + timerValues.minutes * 60 + timerValues.hours * 3600;
+    // Coverting time to seconds so we stop timer when converted time is 0
+
     if (timerValues.timeInSeconds >= 5) {
       let checkSeconds = timerValues.seconds;
       let checkMinutes = timerValues.minutes;
       let checkHours = timerValues.hours;
-      // Coverting time to seconds so we stop timer when converted time is 0
 
       let timetoDecrease = 59;
 
@@ -248,6 +255,8 @@ export default function TimerCon() {
         wasPaused: false,
       }));
     }
+
+    // setshowAddTimer((prev) => ({ ...prev, show: !prev.show }));
   };
 
   const pauseTimer = () => {
@@ -279,6 +288,153 @@ export default function TimerCon() {
     clearInterval(id);
   };
 
+  const showAdd = () => {
+    setshowAddTimer((prev) => ({
+      ...prev,
+      show: !prev.show,
+      isEdit: false,
+      timerID: "",
+    }));
+    // Reseting Timer so everything starts from 0
+    setEndTimer((prev) => !prev);
+  };
+
+  const hideAdd = () => {
+    setshowAddTimer((prev) => ({ ...prev, show: !prev.show }));
+  };
+
+  // Saving Timer
+  const handleSaveTimer = () => {
+    // Making Sure timer is greater than 5 seconds
+    if (timerValues.timeInSeconds >= 5) {
+      let savedTimer = {
+        id: Math.floor(Math.random() * 1000),
+        timerName: showAddTimer.name,
+
+        stickerName: stickers.stickerName,
+        timer: {
+          hours: timerValues.hours,
+          minutes: timerValues.minutes,
+          seconds: timerValues.seconds,
+        },
+        clicked: false,
+      };
+
+      setshowAddTimer((prev) => ({ ...prev, show: false }));
+      setSavedTimers((prev) => [...prev, savedTimer]);
+      setEndTimer((prev) => !prev);
+
+      // Storing in local storage when local storage is empty
+      if (!localStorage.getItem("savedTimers")) {
+        localStorage.setItem("savedTimers", JSON.stringify([savedTimer]));
+      } else {
+        let savedTimers = JSON.parse(localStorage.getItem("savedTimers"));
+        localStorage.setItem(
+          "savedTimers",
+          JSON.stringify([...savedTimers, savedTimer])
+        );
+      }
+    }
+  };
+
+  // Setting timer to the time of saved timer that was clicked
+  const handleSetTimer = (id) => {
+    setSavedTimers((prev) => {
+      let savedTimers = [...prev];
+      savedTimers.filter((item) => {
+        if (item.id == id) {
+          item.clicked = true;
+          // Displaying timer based on value of saved timer that was clicked
+          displayTime(
+            item.timer.hours,
+            item.timer.hours + 1,
+            collectedTime.hours,
+            "h"
+          );
+          displayTime(
+            item.timer.minutes,
+            item.timer.minutes + 1,
+            collectedTime.minutes,
+            "m"
+          );
+          displayTime(
+            item.timer.seconds,
+            item.timer.seconds + 1,
+            collectedTime.seconds,
+            "s"
+          );
+          // Setting Index Of Clicked Timer
+          setIndex((prev) => ({
+            ...prev,
+            hours: item.timer.hours,
+            minutes: item.timer.minutes,
+            seconds: item.timer.seconds,
+          }));
+        } else {
+          item.clicked = false;
+        }
+        return true;
+      });
+      return savedTimers;
+    });
+  };
+
+  // Deleting Saved Timer
+  const handleDeleteTimer = (id) => {
+    let timers = [...savedTimers].filter((item) => item.id != id);
+    setSavedTimers(timers);
+    localStorage.setItem("savedTimers", JSON.stringify(timers));
+    // Reseting Timer so everything starts from 0
+    setEndTimer((prev) => !prev);
+  };
+
+  // Setting Timer when already saved timer is clicked
+  const handleSetEditTimer = (id) => {
+    // Displaying Add Timers
+    setshowAddTimer((prev) => ({
+      ...prev,
+      show: !prev.show,
+      isEdit: true,
+      timerID: id,
+    }));
+    // Getting Timer to be editted
+    setSavedTimers((prev) => {
+      let savedTimers = [...prev];
+      savedTimers.filter((item) => {
+        if (item.id == id) {
+          setshowAddTimer((prev) => ({
+            ...prev,
+            name: item.timerName,
+            sticker: item.stickerName,
+          }));
+        }
+        return true;
+      });
+      return savedTimers;
+    });
+  };
+
+  //Editting Saved Timer
+  const handleEditTimer = () => {
+    let timers = [...savedTimers].filter((item) => {
+      if (item.id == showAddTimer.timerID) {
+        item.timerName = showAddTimer.name;
+
+        item.stickerName = stickers.stickerName;
+        item.timer = {
+          hours: timerValues.hours,
+          minutes: timerValues.minutes,
+          seconds: timerValues.seconds,
+        };
+      }
+      item.clicked = false;
+      return true;
+    });
+    setSavedTimers(timers);
+    localStorage.setItem("savedTimers", JSON.stringify(timers));
+    setshowAddTimer((prev) => ({ ...prev, show: false }));
+    setEndTimer((prev) => !prev);
+  };
   useEffect(() => {
     // Initializing Variables
     displayTime(0, 1, collectedTime.hours, "h");
@@ -323,6 +479,8 @@ export default function TimerCon() {
             resetTimer,
             stopTimer,
             setshowAddTimer,
+            showAdd,
+            hideAdd,
             showAddTimer,
             showTimer,
             timerValues,
@@ -330,6 +488,14 @@ export default function TimerCon() {
           sticker={{
             stickers,
             setSticker,
+          }}
+          savedTimer={{
+            savedTimers,
+            handleSaveTimer,
+            handleSetTimer,
+            handleDeleteTimer,
+            handleSetEditTimer,
+            handleEditTimer,
           }}
         />
 
